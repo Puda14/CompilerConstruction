@@ -26,6 +26,9 @@ typedef enum {
   CHAR_SINGLEQUOTE,
   CHAR_LPAR,
   CHAR_RPAR,
+  CHAR_LSEL,
+  CHAR_RSEL,
+  CHAR_PERCENT,
   CHAR_UNKNOWN
 } CharCode;
 
