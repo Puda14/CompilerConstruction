@@ -28,19 +28,71 @@ void skipBlank() {
 
 void skipComment() {
   // TODO
+  readChar();
+  while (1) {
+    if (currentChar == EOF) {
+      error(ERR_ENDOFCOMMENT, lineNo, colNo); // Báo lỗi nếu gặp EOF trước khi comment đóng lại
+      return;
+    }
+
+    // Nếu gặp `*` và ký tự tiếp theo là `)`, tức là kết thúc comment
+    if (charCodes[currentChar] == CHAR_TIMES) {
+      readChar(); // Đọc `*`
+      if (currentChar == EOF) {
+        error(ERR_ENDOFCOMMENT, lineNo, colNo);
+        return;
+      }
+      if (charCodes[currentChar] == CHAR_RPAR) {
+        readChar(); // Đọc `)` để thoát khỏi comment
+        return;
+      }
+    } else {
+      // Đọc tiếp cho đến khi gặp `*)`
+      readChar();
+    }
+  }
 }
 
 Token* readIdentKeyword(void) {
   // TODO
+  Token *token = makeToken(TK_IDENT, lineNo, colNo);
+  int count = 0;
+  while (charCodes[currentChar] == CHAR_LETTER || charCodes[currentChar] == CHAR_DIGIT) {
+    if (count < MAX_IDENT_LEN) {
+      token->string[count] = currentChar;
+      count++;
+    }
+    readChar();
+  }
+  token->string[count] = '\0';
+
+  TokenType tokenType = checkKeyword(token->string);
+  if (tokenType != TK_NONE) {
+    token->tokenType = tokenType;
+  }
+
+  return token;
 }
 
 Token* readNumber(void) {
   // TODO
+  Token *token = makeToken(TK_NUMBER, lineNo, colNo);
+  int count = 0;
+  while (charCodes[currentChar] == CHAR_DIGIT) {
+    if (count < MAX_IDENT_LEN) {
+      token->string[count] = currentChar;
+      count++;
+    }
+    readChar();
+  }
+  token->string[count] = '\0';
+  token->value = atoi(token->string);
+  return token;
 }
 
 Token* readConstChar(void) {
   // TODO
-   Token *token = makeToken(TK_CHAR, lineNo, colNo);
+  Token *token = makeToken(TK_CHAR, lineNo, colNo);
 
   readChar();
   if (currentChar == EOF) {
@@ -85,9 +137,82 @@ Token* getToken(void) {
     token = makeToken(SB_PLUS, lineNo, colNo);
     readChar();
     return token;
-    // ....
-    // TODO
-    // ....
+  // ....
+  // TODO
+  // ....
+  case CHAR_MINUS:
+    token = makeToken(SB_MINUS, lineNo, colNo);
+    readChar();
+    return token;
+  case CHAR_TIMES:
+    token = makeToken(SB_TIMES, lineNo, colNo);
+    readChar();
+    return token;
+  case CHAR_SLASH:
+    token = makeToken(SB_SLASH, lineNo, colNo);
+    readChar();
+    return token;
+  case CHAR_LT:
+    token = makeToken(SB_LT, lineNo, colNo);
+    readChar();
+    if (charCodes[currentChar] == CHAR_EQ) {
+      token->tokenType = SB_LE;
+      readChar();
+    }
+    return token;
+  case CHAR_GT:
+    token = makeToken(SB_GT, lineNo, colNo);
+    readChar();
+    if (charCodes[currentChar] == CHAR_EQ) {
+      token->tokenType = SB_GE;
+      readChar();
+    }
+    return token;
+  case CHAR_EQ:
+    token = makeToken(SB_EQ, lineNo, colNo);
+    readChar();
+    return token;
+  case CHAR_EXCLAIMATION:
+    token = makeToken(SB_NEQ, lineNo, colNo);
+    readChar();
+    if (charCodes[currentChar] == CHAR_EQ) {
+      readChar();
+    } else {
+      token->tokenType = TK_NONE;
+      error(ERR_INVALIDSYMBOL, lineNo, colNo);
+    }
+    return token;
+  case CHAR_COMMA:
+    token = makeToken(SB_COMMA, lineNo, colNo);
+    readChar();
+    return token;
+  case CHAR_PERIOD:
+    token = makeToken(SB_PERIOD, lineNo, colNo);
+    readChar();
+    return token;
+  case CHAR_SEMICOLON:
+    token = makeToken(SB_SEMICOLON, lineNo, colNo);
+    readChar();
+    return token;
+  case CHAR_COLON:
+    token = makeToken(SB_COLON, lineNo, colNo);
+    readChar();
+    return token;
+  case CHAR_SINGLEQUOTE:
+    return readConstChar();
+  case CHAR_LPAR:
+  readChar();
+    if (charCodes[currentChar] == CHAR_TIMES) { // Nhận diện bắt đầu comment
+      skipComment();  // Bỏ qua toàn bộ comment
+      return getToken();  // Sau khi bỏ qua comment, tiếp tục xử lý token tiếp theo
+    } else {
+      token = makeToken(SB_LPAR, lineNo, colNo);
+      return token;
+    }
+  case CHAR_RPAR:
+    token = makeToken(SB_RPAR, lineNo, colNo);
+    readChar();
+    return token;
   default:
     token = makeToken(TK_NONE, lineNo, colNo);
     error(ERR_INVALIDSYMBOL, lineNo, colNo);
