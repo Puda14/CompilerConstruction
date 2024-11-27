@@ -1,4 +1,4 @@
-/* 
+/*
  * @copyright (c) 2008, Hedspi, Hanoi University of Technology
  * @author Huu-Duc Nguyen
  * @version 1.0
@@ -17,6 +17,7 @@ struct {
   {"TYPE", KW_TYPE},
   {"VAR", KW_VAR},
   {"INTEGER", KW_INTEGER},
+  {"BYTES", KW_BYTES},
   {"CHAR", KW_CHAR},
   {"ARRAY", KW_ARRAY},
   {"OF", KW_OF},
@@ -31,7 +32,9 @@ struct {
   {"WHILE", KW_WHILE},
   {"DO", KW_DO},
   {"FOR", KW_FOR},
-  {"TO", KW_TO}
+  {"TO", KW_TO},
+  {"REPEAT", KW_REPEAT},
+  {"UNTIL", KW_UNTIL},
 };
 
 int keywordEq(char *kw, char *string) {
@@ -45,7 +48,7 @@ int keywordEq(char *kw, char *string) {
 TokenType checkKeyword(char *string) {
   int i;
   for (i = 0; i < KEYWORDS_COUNT; i++)
-    if (keywordEq(keywords[i].string, string)) 
+    if (keywordEq(keywords[i].string, string))
       return keywords[i].tokenType;
   return TK_NONE;
 }
@@ -71,6 +74,7 @@ char *tokenToString(TokenType tokenType) {
   case KW_TYPE: return "keyword TYPE";
   case KW_VAR: return "keyword VAR";
   case KW_INTEGER: return "keyword INTEGER";
+  case KW_BYTES: return "keyword BYTES";
   case KW_CHAR: return "keyword CHAR";
   case KW_ARRAY: return "keyword ARRAY";
   case KW_OF: return "keyword OF";
@@ -86,6 +90,8 @@ char *tokenToString(TokenType tokenType) {
   case KW_DO: return "keyword DO";
   case KW_FOR: return "keyword FOR";
   case KW_TO: return "keyword TO";
+  case KW_REPEAT: return "keyword REPEAT";
+  case KW_UNTIL: return "keyword UNTIL";
 
   case SB_SEMICOLON: return "\';\'";
   case SB_COLON: return "\':\'";
@@ -101,6 +107,7 @@ char *tokenToString(TokenType tokenType) {
   case SB_PLUS: return "\'+\'";
   case SB_MINUS: return "\'-\'";
   case SB_TIMES: return "\'*\'";
+  case SB_POWER: return "\'^\'";
   case SB_SLASH: return "\'/\'";
   case SB_LPAR: return "\'(\'";
   case SB_RPAR: return "\')\'";

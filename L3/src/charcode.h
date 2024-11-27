@@ -1,4 +1,4 @@
-/* 
+/*
  * @copyright (c) 2008, Hedspi, Hanoi University of Technology
  * @author Huu-Duc Nguyen
  * @version 1.0
@@ -14,6 +14,7 @@ typedef enum {
   CHAR_PLUS,
   CHAR_MINUS,
   CHAR_TIMES,
+  CHAR_POWER,
   CHAR_SLASH,
   CHAR_LT,
   CHAR_GT,

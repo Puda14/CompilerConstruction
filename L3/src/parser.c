@@ -203,6 +203,9 @@ void compileType(void) {
     case KW_CHAR:
       eat(KW_CHAR);
       break;
+    case KW_BYTES:
+      eat(KW_BYTES);
+      break;
     case TK_IDENT:
       eat(TK_IDENT);
       break;
@@ -222,7 +225,9 @@ void compileType(void) {
 
 void compileBasicType(void) {
   // TODO
-  if (lookAhead->tokenType == KW_INTEGER || lookAhead->tokenType == KW_CHAR) {
+  if (lookAhead->tokenType == KW_INTEGER
+      || lookAhead->tokenType == KW_CHAR
+      || lookAhead->tokenType == KW_BYTES) {
     eat(lookAhead->tokenType);
   } else {
     error(ERR_INVALIDBASICTYPE, lookAhead->lineNo, lookAhead->colNo);
@@ -279,6 +284,7 @@ void compileStatements2(void) {
       compileStatements2();
       break;
     case KW_END:
+    case KW_UNTIL:
       break;
     default:
       eat(SB_SEMICOLON);
@@ -308,9 +314,13 @@ void compileStatement(void) {
     compileForSt();
     break;
     // EmptySt needs to check FOLLOW tokens
+  case KW_REPEAT:
+    compileRepeatSt();
+    break;
   case SB_SEMICOLON:
   case KW_END:
   case KW_ELSE:
+  case KW_UNTIL:
     break;
     // Error occurs
   default:
@@ -385,6 +395,15 @@ void compileForSt(void) {
   eat(KW_DO);
   compileStatement();
   assert("For statement parsed ....");
+}
+
+void compileRepeatSt(void) {
+  assert("Parsing a repeat statement ....");
+  eat(KW_REPEAT);
+  compileStatements();
+  eat(KW_UNTIL);
+  compileCondition();
+  assert("Repeat statement parsed ....");
 }
 
 void compileArguments(void) {
@@ -493,7 +512,9 @@ void compileTerm(void) {
 
 void compileTerm2(void) {
   // TODO
-  if (lookAhead->tokenType == SB_TIMES || lookAhead->tokenType == SB_SLASH) {
+  if (lookAhead->tokenType == SB_TIMES
+      || lookAhead->tokenType == SB_SLASH
+      || lookAhead->tokenType == SB_POWER) {
     eat(lookAhead->tokenType);
     compileFactor();
     compileTerm2();
