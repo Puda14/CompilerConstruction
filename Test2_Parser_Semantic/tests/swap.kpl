@@ -1,27 +1,20 @@
-Program Example6;
-   Const c1 = 10;
-  	 c2 = 'a';
-   Type t1 = array(. 10 .) of integer;
-   Var v1 : Integer;
-       v2 : Array(. 10 .) of t1;
+PROGRAM SwapTest;
+CONST d = 20;
+VAR  a:INTEGER;
+     b:INTEGER;
+     c:Array(. 10 .) of INTEGER;
+     e:Array(. 10 .) of INTEGER;
+     f:INTEGER;
 
-   Function F(p1 : Integer; Var p2 : char) : Integer;
-     Begin
-       f := c1;
-     End;
+BEGIN
+  a := 20;
+  b := 10;
 
-   procedure p(v1 : integer);
-     const c1 = 'a';
-           c3 = 10;
-     type t1 = integer;
-          t2 = array(. 10 .) of t1;
-     var v2 : t2;
-         v3 : char;
-     begin
-	v3 := 'a';
-        v1 := f(c3,v3);
-     end;
+  a, b := b, a;
+  c(.0.), e(.1.)  := e(.1.), c(.0.);
+  a, b, f := b, a, d;
 
-Begin
-     call p(c1);
-End.
+  CALL WRITEI(a);
+  CALL WRITELN;
+  CALL WRITEI(b);
+END.
