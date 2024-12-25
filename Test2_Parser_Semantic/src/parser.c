@@ -691,12 +691,36 @@ void compileCondition(void)
   checkTypeEquality(type1, type2);
 }
 
+#define MAX_EXPRESSION_COUNT 100
 Type *compileExpression(void)
 {
   Type *type;
 
   switch (lookAhead->tokenType)
   {
+  case KW_SUM:
+    eat(KW_SUM);
+    Type *sumTypes[MAX_EXPRESSION_COUNT];
+    int sumCount = 0;
+
+    do {
+      type = compileExpression();
+      checkIntType(type);
+      sumTypes[sumCount++] = type;
+
+      if (lookAhead->tokenType == SB_COMMA) {
+        eat(SB_COMMA);
+      }
+    } while (lookAhead->tokenType != SB_SEMICOLON && sumCount < MAX_EXPRESSION_COUNT);
+
+    for (int i = 0; i < sumCount; i++) {
+      if (sumTypes[i]->typeClass != TP_INT) {
+        error(ERR_INVALID_TYPE, currentToken->lineNo, currentToken->colNo);
+      }
+    }
+
+    type = intType;
+    break;
   case SB_PLUS:
     eat(SB_PLUS);
     type = compileExpression2();
